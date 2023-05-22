@@ -6,4 +6,5 @@ export enum Routes {
   UserActivityLevel = 'User activity level',
   UserGoal = 'User goal',
   SignUpCongrats = 'Sign up congrats',
+  Home = 'Home',
 }

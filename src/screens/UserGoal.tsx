@@ -2,25 +2,28 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 
 import Title from '../components/Title';
 import Screen from '../components/layout/Screen';
 import { Colors } from '../constants';
 import { Routes } from '../routes/routes';
 import { RouteParams } from '../routes/types';
+import { UserGoal } from '../types';
+import { IStore, RootContext } from '../stores/rootStore';
 
 type RoutePropType = StackNavigationProp<RouteParams, Routes.UserGoal>;
 
-enum Goals {
-  LoseWeight = 'lose_weight',
-  MaintainWeight = 'maintain_weight',
-  GainWeight = 'gain_weight',
-}
-
 const UserGoalScreen: React.FC = () => {
   const navigation = useNavigation<RoutePropType>();
-  const [goal, setUserGoal] = useState(Goals.LoseWeight);
+  const [goal, setUserGoal] = useState(UserGoal.LoseWeight);
+
+  const rootStore = React.useContext<IStore>(RootContext);
+
+  const onNextPressed = () => {
+    navigation.navigate(Routes.SignUpCongrats);
+    rootStore.updateStoredUser({ goal });
+  };
 
   return (
     <Screen>
@@ -31,11 +34,11 @@ const UserGoalScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              Goals.LoseWeight === goal && { backgroundColor: Colors.selectedButton },
+              UserGoal.LoseWeight === goal && { backgroundColor: Colors.selectedButton },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setUserGoal(Goals.LoseWeight);
+              setUserGoal(UserGoal.LoseWeight);
             }}
           >
             Lose weight
@@ -45,13 +48,13 @@ const UserGoalScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              Goals.MaintainWeight === goal && {
+              UserGoal.MaintainWeight === goal && {
                 backgroundColor: Colors.selectedButton,
               },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setUserGoal(Goals.MaintainWeight);
+              setUserGoal(UserGoal.MaintainWeight);
             }}
           >
             Maintain Weight
@@ -61,25 +64,19 @@ const UserGoalScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              Goals.GainWeight === goal && {
+              UserGoal.GainWeight === goal && {
                 backgroundColor: Colors.selectedButton,
               },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setUserGoal(Goals.GainWeight);
+              setUserGoal(UserGoal.GainWeight);
             }}
           >
             Gain Weight
           </Button>
 
-          <Button
-            mode="contained"
-            style={styles.nextButton}
-            onPress={() => {
-              navigation.navigate(Routes.SignUpCongrats);
-            }}
-          >
+          <Button mode="contained" style={styles.nextButton} onPress={onNextPressed}>
             Next
           </Button>
         </View>

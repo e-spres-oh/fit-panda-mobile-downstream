@@ -10,13 +10,25 @@ import { Colors } from '../constants';
 import { Routes } from '../routes/routes';
 import { RouteParams } from '../routes/types';
 import Subtitle from '../components/Subtitle';
+import { IStore, RootContext } from '../stores/rootStore';
 
 type RoutePropType = StackNavigationProp<RouteParams, Routes.SignUpCongrats>;
 
 const SignUpCongratsScreen: React.FC = () => {
+  const rootStore = React.useContext<IStore>(RootContext);
   const navigation = useNavigation<RoutePropType>();
-  const [kcal, setKcal] = useState('2600');
+  const [kcal, setKcal] = useState(Math.round(rootStore.computeTDEE()).toString());
 
+  const onStartPressed = async () => {
+    try {
+      rootStore.updateStoredUser({ target: parseInt(kcal, 10) });
+      await rootStore.updateUser(rootStore.getUser());
+      navigation.navigate(Routes.Home);
+    } catch (e) {
+      console.log(e);
+      navigation.navigate(Routes.UserInfo);
+    }
+  };
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.scrollViewContainer} bounces={false}>
@@ -37,13 +49,7 @@ const SignUpCongratsScreen: React.FC = () => {
             keyboardType="numeric"
           />
 
-          <Button
-            mode="contained"
-            style={styles.nextButton}
-            onPress={() => {
-              navigation.navigate(Routes.Welcome);
-            }}
-          >
+          <Button mode="contained" style={styles.nextButton} onPress={onStartPressed}>
             Start your journey!
           </Button>
         </View>

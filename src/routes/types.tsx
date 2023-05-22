@@ -8,4 +8,5 @@ export type RouteParams = {
   [Routes.UserActivityLevel]: undefined;
   [Routes.UserGoal]: undefined;
   [Routes.SignUpCongrats]: undefined;
+  [Routes.Home]: undefined;
 };

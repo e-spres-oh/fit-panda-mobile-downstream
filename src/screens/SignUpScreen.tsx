@@ -9,7 +9,7 @@ import Screen from '../components/layout/Screen';
 import { Colors } from '../constants';
 import { Routes } from '../routes/routes';
 import { RouteParams } from '../routes/types';
-import { BASE_URL, endpoints } from '../endpoints';
+import { IStore, RootContext } from '../stores/rootStore';
 
 type RoutePropType = StackNavigationProp<RouteParams, Routes.Welcome>;
 type RegisterData = {
@@ -19,6 +19,7 @@ type RegisterData = {
 };
 
 const SignUpScreen: React.FC = () => {
+  const rootStore = React.useContext<IStore>(RootContext);
   const [hidePassword, setHidePassword] = useState(true);
   const [errorMessage, setErrorMEssage] = useState('');
   const navigation = useNavigation<RoutePropType>();
@@ -33,21 +34,12 @@ const SignUpScreen: React.FC = () => {
       setErrorMEssage('');
     }
 
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: registerData.email, password: registerData.password }),
-    };
-
+    console.log('user registration', rootStore);
     try {
-      const response = await fetch(`${BASE_URL}${endpoints.Register}`, requestOptions);
-      const result = await response.json();
-      if (response.ok) {
-        navigation.navigate(Routes.UserInfo);
-      } else {
-        console.log(JSON.stringify(result));
-        setErrorMEssage(result.message);
-      }
+      await rootStore.register(registerData.email, registerData.password);
+      await rootStore.login(registerData.email, registerData.password);
+      rootStore.updateStoredUser({ name: registerData.name });
+      navigation.navigate(Routes.UserInfo);
     } catch (e: any) {
       console.log(e);
       setErrorMEssage(e.message);

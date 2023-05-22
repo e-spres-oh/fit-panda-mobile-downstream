@@ -10,12 +10,30 @@ import Screen from '../components/layout/Screen';
 import { Colors } from '../constants';
 import { Routes } from '../routes/routes';
 import { RouteParams } from '../routes/types';
+import { UserProfile, UserSex } from '../types';
+import { IStore, RootContext } from '../stores/rootStore';
 
 type RoutePropType = StackNavigationProp<RouteParams, Routes.UserInfo>;
 
 const UserInfoScreen: React.FC = () => {
+  const rootStore = React.useContext<IStore>(RootContext);
   const navigation = useNavigation<RoutePropType>();
-  const [value, setValue] = useState('');
+  const [userSex, setUserSex] = useState<UserSex>('male');
+  const [userInfo, setUserInfo] = useState<Partial<UserProfile>>({
+    height: 170,
+    weight: 80,
+    age: 40,
+  });
+
+  const onNextPressed = () => {
+    rootStore.updateStoredUser({
+      sex: userSex,
+      height: userInfo.height,
+      age: userInfo.age,
+      weight: userInfo.weight,
+    });
+    navigation.navigate(Routes.UserActivityLevel);
+  };
 
   return (
     <Screen>
@@ -27,8 +45,8 @@ const UserInfoScreen: React.FC = () => {
             Please select witch sex we should use to calculate your calorie needs
           </Text>
           <SegmentedButtons
-            value={value}
-            onValueChange={setValue}
+            value={userSex}
+            onValueChange={(value) => setUserSex(value as UserSex)}
             style={styles.selectable}
             buttons={[
               {
@@ -36,7 +54,7 @@ const UserInfoScreen: React.FC = () => {
                 label: 'Male',
                 style: {
                   backgroundColor:
-                    value === 'male' ? Colors.selectedButton : Colors.inputBackground,
+                    userSex === 'male' ? Colors.selectedButton : Colors.inputBackground,
                   borderWidth: 0,
                   justifyContent: 'center',
                 },
@@ -46,7 +64,7 @@ const UserInfoScreen: React.FC = () => {
                 label: 'Female',
                 style: {
                   backgroundColor:
-                    value === 'female' ? Colors.selectedButton : Colors.inputBackground,
+                    userSex === 'female' ? Colors.selectedButton : Colors.inputBackground,
                   borderWidth: 0,
                   justifyContent: 'center',
                 },
@@ -56,18 +74,22 @@ const UserInfoScreen: React.FC = () => {
           <Text style={styles.inputLabel}>How tall are you?</Text>
           <TextInput
             mode="outlined"
-            inputMode="text"
             style={styles.input}
             placeholder={'170 cm'}
+            value={`${!Number.isNaN(userInfo.height) ? userInfo.height : ''}`}
+            keyboardType="numeric"
+            onChangeText={(text) => setUserInfo({ ...userInfo, height: parseInt(text, 10) })}
             outlineStyle={styles.inputField}
           />
           <Text style={styles.inputLabel}>How much do you weigh?</Text>
           <TextInput
             mode="outlined"
-            inputMode="email"
             style={styles.input}
             placeholder="80 kg"
             outlineStyle={styles.inputField}
+            value={`${!Number.isNaN(userInfo.weight) ? userInfo.weight : ''}`}
+            keyboardType="numeric"
+            onChangeText={(text) => setUserInfo({ ...userInfo, weight: parseInt(text, 10) })}
           />
           <Text style={styles.inputLabel}>How old are you?</Text>
           <TextInput
@@ -75,15 +97,12 @@ const UserInfoScreen: React.FC = () => {
             placeholder="40"
             mode="outlined"
             outlineStyle={styles.inputField}
+            value={`${!Number.isNaN(userInfo.age) ? userInfo.age : ''}`}
+            keyboardType="numeric"
+            onChangeText={(text) => setUserInfo({ ...userInfo, age: parseInt(text, 10) })}
           />
 
-          <Button
-            mode="contained"
-            style={styles.nextButton}
-            onPress={() => {
-              navigation.navigate(Routes.UserActivityLevel);
-            }}
-          >
+          <Button mode="contained" style={styles.nextButton} onPress={onNextPressed}>
             Next
           </Button>
         </View>
@@ -94,18 +113,17 @@ const UserInfoScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
-    flex: 1,
+    flexDirection: 'column',
   },
-  titleContainer: {
-    flex: 1,
-  },
+  titleContainer: {},
   subtitle: {
     marginTop: 10,
     marginHorizontal: 70,
     marginBottom: 30,
   },
   inputFieldsContainer: {
-    flex: 3,
+    flexDirection: 'column',
+    flexGrow: 1,
   },
   inputLabel: {
     fontSize: 15,

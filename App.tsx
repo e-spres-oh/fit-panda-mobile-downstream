@@ -11,6 +11,8 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import UserActivityLevelScreen from './src/screens/UserActivityLevelScreen';
 import UserGoalScreen from './src/screens/UserGoal';
 import SignUpCongratsScreen from './src/screens/SignUpCongrats';
+import { IStore, RootContext, RootStore } from './src/stores/rootStore';
+import HomeScreen from './src/screens/HomeScreen';
 
 const colors = {
   primary: '#5589f8',
@@ -31,8 +33,9 @@ const theme: MD3Theme = {
 const Stack = createStackNavigator<RouteParams>();
 
 export default function App() {
+  const [store] = React.useState<IStore>(new RootStore());
   return (
-    <>
+    <RootContext.Provider value={store}>
       <PaperProvider theme={theme}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={Routes.Welcome}>
@@ -83,9 +86,16 @@ export default function App() {
                 headerShown: false,
               }}
             />
+            <Stack.Screen
+              name={Routes.Home}
+              component={HomeScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
-    </>
+    </RootContext.Provider>
   );
 }

@@ -9,19 +9,21 @@ import Screen from '../components/layout/Screen';
 import { Colors } from '../constants';
 import { Routes } from '../routes/routes';
 import { RouteParams } from '../routes/types';
+import { IStore, RootContext } from '../stores/rootStore';
+import { UserActivityLevel } from '../types';
 
 type RoutePropType = StackNavigationProp<RouteParams, Routes.UserActivityLevel>;
 
-enum ActivityLevel {
-  Low = 'low',
-  Moderate = 'moderate',
-  High = 'high',
-  VeryHigh = 'very_high',
-}
-
 const UserActivityLevelScreen: React.FC = () => {
   const navigation = useNavigation<RoutePropType>();
-  const [activityLevel, setActivityLevel] = useState(ActivityLevel.Low);
+  const [activityLevel, setActivityLevel] = useState(UserActivityLevel.Low);
+
+  const rootStore = React.useContext<IStore>(RootContext);
+
+  const onNextPressed = () => {
+    rootStore.updateStoredUser({ activity: activityLevel });
+    navigation.navigate(Routes.UserGoal);
+  };
 
   return (
     <Screen>
@@ -35,11 +37,11 @@ const UserActivityLevelScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              ActivityLevel.Low === activityLevel && { backgroundColor: Colors.selectedButton },
+              UserActivityLevel.Low === activityLevel && { backgroundColor: Colors.selectedButton },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setActivityLevel(ActivityLevel.Low);
+              setActivityLevel(UserActivityLevel.Low);
             }}
           >
             Low
@@ -51,13 +53,13 @@ const UserActivityLevelScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              ActivityLevel.Moderate === activityLevel && {
+              UserActivityLevel.Moderate === activityLevel && {
                 backgroundColor: Colors.selectedButton,
               },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setActivityLevel(ActivityLevel.Moderate);
+              setActivityLevel(UserActivityLevel.Moderate);
             }}
           >
             Moderate
@@ -69,11 +71,13 @@ const UserActivityLevelScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              ActivityLevel.High === activityLevel && { backgroundColor: Colors.selectedButton },
+              UserActivityLevel.High === activityLevel && {
+                backgroundColor: Colors.selectedButton,
+              },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setActivityLevel(ActivityLevel.High);
+              setActivityLevel(UserActivityLevel.High);
             }}
           >
             High
@@ -85,25 +89,19 @@ const UserActivityLevelScreen: React.FC = () => {
             mode="contained"
             style={[
               styles.button,
-              ActivityLevel.VeryHigh === activityLevel && {
+              UserActivityLevel.VeryHigh === activityLevel && {
                 backgroundColor: Colors.selectedButton,
               },
             ]}
             labelStyle={{ color: 'black' }}
             onPress={() => {
-              setActivityLevel(ActivityLevel.VeryHigh);
+              setActivityLevel(UserActivityLevel.VeryHigh);
             }}
           >
             Very high
           </Button>
 
-          <Button
-            mode="contained"
-            style={styles.nextButton}
-            onPress={() => {
-              navigation.navigate(Routes.UserGoal);
-            }}
-          >
+          <Button mode="contained" style={styles.nextButton} onPress={onNextPressed}>
             Next
           </Button>
         </View>
