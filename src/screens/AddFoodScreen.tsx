@@ -22,11 +22,15 @@ const AddFoodScreen: React.FC = () => {
   const [showCamera, setShowCamera] = useState(false);
 
   const onSubmit = async () => {
-    const foodId = await rootStore.addFood(name, kcal, new Date());
-    if (foodId && image) {
-      await rootStore.addFoodImage(foodId, { uri: image?.uri, name: '', type: '' } as Photo);
+    try {
+      const foodId = await rootStore.addFood(name, kcal, new Date());
+      if (foodId && image) {
+        await rootStore.addFoodImage(foodId, { uri: image?.uri, name: '', type: '' } as Photo);
+      }
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
     }
-    navigation.goBack();
   };
 
   const onPictureTacken = (picture: CameraCapturedPicture) => {
@@ -70,7 +74,12 @@ const AddFoodScreen: React.FC = () => {
             />
           </View>
 
-          <Button mode="contained" style={{ marginTop: 'auto' }} onPress={onSubmit}>
+          <Button
+            mode="contained"
+            style={{ marginTop: 'auto' }}
+            onPress={onSubmit}
+            disabled={!name}
+          >
             Save
           </Button>
         </View>
