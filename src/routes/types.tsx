@@ -9,4 +9,5 @@ export type RouteParams = {
   [Routes.UserGoal]: undefined;
   [Routes.SignUpCongrats]: undefined;
   [Routes.Home]: undefined;
+  [Routes.AddFood]: undefined;
 };

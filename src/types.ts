@@ -7,6 +7,12 @@ export enum UserGoal {
   GainWeight = 'GAIN_WEIGHT',
 }
 
+export type Photo = {
+  uri: string;
+  name: string;
+  type: string;
+};
+
 export enum UserActivityLevel {
   Low = 'LOW',
   Moderate = 'MODERATE',

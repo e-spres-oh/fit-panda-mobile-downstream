@@ -13,6 +13,7 @@ import UserGoalScreen from './src/screens/UserGoal';
 import SignUpCongratsScreen from './src/screens/SignUpCongrats';
 import { IStore, RootContext, RootStore } from './src/stores/rootStore';
 import HomeScreen from './src/screens/HomeScreen';
+import AddFoodScreen from './src/screens/AddFoodScreen';
 
 const colors = {
   primary: '#5589f8',
@@ -93,6 +94,7 @@ export default function App() {
                 headerShown: false,
               }}
             />
+            <Stack.Screen name={Routes.AddFood} component={AddFoodScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
