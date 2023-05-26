@@ -4,4 +4,5 @@ export const endpoints = {
   Register: 'auth/register',
   Login: 'auth/login',
   Profile: 'profile',
+  Foods: 'foods',
 };

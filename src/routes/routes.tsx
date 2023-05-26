@@ -7,4 +7,5 @@ export enum Routes {
   UserGoal = 'User goal',
   SignUpCongrats = 'Sign up congrats',
   Home = 'Home',
+  AddFood = 'Add food',
 }

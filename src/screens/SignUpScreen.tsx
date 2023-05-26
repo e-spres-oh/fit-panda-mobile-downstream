@@ -34,7 +34,6 @@ const SignUpScreen: React.FC = () => {
       setErrorMEssage('');
     }
 
-    console.log('user registration', rootStore);
     try {
       await rootStore.register(registerData.email, registerData.password);
       await rootStore.login(registerData.email, registerData.password);

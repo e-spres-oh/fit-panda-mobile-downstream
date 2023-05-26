@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRequestOptions } from '../utils/utils';
 import { BASE_URL, endpoints } from '../endpoints';
-import { UserActivityLevel, UserGoal, UserProfile } from '../types';
+import { Photo, UserActivityLevel, UserGoal, UserProfile } from '../types';
 
 export interface IStore {
   isAuthenticated(): boolean;
@@ -16,6 +16,8 @@ export interface IStore {
   getUserProfile(): Promise<void>;
 
   computeTDEE(): number;
+  addFood(name: string, kcal: number, date: Date): Promise<number | undefined>;
+  addFoodImage(foodId: number, photo: Photo): Promise<void>;
 }
 
 const activityMultiplier = {
@@ -130,6 +132,47 @@ export class RootStore implements IStore {
     } catch (e) {
       console.log(e);
       console.log('Failed to fetch Fit-Panda user');
+    }
+  }
+
+  async addFood(name: string, kcal: number, date: Date): Promise<number | undefined> {
+    try {
+      const response = await fetch(
+        `${BASE_URL}${endpoints.Foods}`,
+        createRequestOptions('POST', this.token, { name, kcal, consumedAt: date.toISOString() })
+      );
+      if (!response.ok) {
+        throw new Error('Failed add food');
+      }
+      const result = await response.json();
+      console.log('Added food');
+      return parseInt(result.id);
+    } catch (e) {
+      console.log(e);
+      console.log('Failed to add food');
+    }
+  }
+
+  async addFoodImage(foodId: number, photo: Photo): Promise<void> {
+    try {
+      const data = new FormData();
+      if (!photo.name) photo.name = 'Photo' + Date.now();
+      if (!photo.type) photo.type = 'jpeg';
+      data.append('file', photo as any);
+      const response = await fetch(`${BASE_URL}${endpoints.Foods}/${foodId}/photo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${this.token}` },
+        body: data,
+      });
+      if (!response.ok) {
+        const result = await response.json();
+        console.log(result);
+        throw new Error('Failed add photo');
+      }
+      console.log('Added photo');
+    } catch (e) {
+      console.log(e);
+      console.log('Failed to add photo');
     }
   }
 

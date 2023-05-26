@@ -2,21 +2,39 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, TextInput, Text } from 'react-native-paper';
 import Title from '../components/Title';
 import Screen from '../components/layout/Screen';
 import { Colors } from '../constants';
 import { Routes } from '../routes/routes';
 import { RouteParams } from '../routes/types';
+import { IStore, RootContext } from '../stores/rootStore';
 
 type RoutePropType = StackNavigationProp<RouteParams, Routes.Welcome>;
 
 const LoginScreen: React.FC = () => {
+  const rootStore = React.useContext<IStore>(RootContext);
   const [hidePassword, setHidePassword] = React.useState(true);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const navigation = useNavigation<RoutePropType>();
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const onRegisterPress = () => {
     navigation.navigate(Routes.SignUp);
+  };
+
+  const onLogin = async () => {
+    try {
+      await rootStore.login(email, password);
+      if (rootStore.isAuthenticated()) {
+        navigation.navigate(Routes.Home);
+      } else {
+        setErrorMessage('Invalid credentials');
+      }
+    } catch (e: any) {
+      console.log(e);
+    }
   };
 
   return (
@@ -29,6 +47,10 @@ const LoginScreen: React.FC = () => {
           style={styles.input}
           placeholder="Email"
           outlineStyle={styles.inputField}
+          onChangeText={(text) => {
+            setEmail(text);
+            setErrorMessage('');
+          }}
         />
         <TextInput
           style={styles.input}
@@ -37,8 +59,13 @@ const LoginScreen: React.FC = () => {
           outlineStyle={styles.inputField}
           secureTextEntry={hidePassword}
           right={<TextInput.Icon icon="eye" onPress={() => setHidePassword(!hidePassword)} />}
+          onChangeText={(text) => {
+            setPassword(text);
+            setErrorMessage('');
+          }}
         />
-        <Button mode="contained" style={styles.button}>
+        <Text>{errorMessage}</Text>
+        <Button mode="contained" style={styles.button} onPress={onLogin}>
           Login
         </Button>
       </View>
